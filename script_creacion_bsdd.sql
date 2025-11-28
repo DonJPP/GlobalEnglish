@@ -7,7 +7,7 @@ CREATE TABLE institucion (
 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE sede (
-    id_sede INT AUTO_INCREMENT PRIMARY KEY,
+    id_sede INT  PRIMARY KEY,
     id_institucion INT NOT NULL,
     direccion_completa VARCHAR(150) NOT NULL,
     sede_principal VARCHAR(3) NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE sede (
 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE aula (
-    id_aula INT AUTO_INCREMENT PRIMARY KEY,
+    id_aula INT  PRIMARY KEY,
     grado VARCHAR(20) NOT NULL,
     programa VARCHAR(30) NOT NULL,
     id_sede INT NOT NULL,
@@ -52,7 +52,7 @@ DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE estudiante(
-id_estudiante int PRIMARY KEY AUTO_INCREMENT,
+id_estudiante int PRIMARY KEY ,
 nombres varchar(100),
 apellidos varchar(100),
 id_aula int not null,
@@ -106,7 +106,7 @@ DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE tutor (
-id_tutor INT PRIMARY KEY AUTO_INCREMENT,
+id_tutor INT PRIMARY KEY ,
 nombres varchar(100) NOT NULL,
 apellidos varchar(100) NOT NULL,
 usuario varchar(50) NULL,
@@ -198,7 +198,7 @@ id_tutor int not null,
 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE administrativo (
-id_administrativo int PRIMARY KEY AUTO_INCREMENT,
+id_administrativo int PRIMARY KEY ,
 nombres varchar(100) NOT NULL,
 apellidos varchar(100) NOT NULL,
 usuario varchar(50) NULL,

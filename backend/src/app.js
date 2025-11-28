@@ -1,5 +1,6 @@
 import express from "express";
 import tutorRoutes from "./routes/tutor.routes.js";
+import estudiantesRoutes from "./routes/estudiante.routes.js";
 
 console.log(">>> ESTE ES EL APP.JS QUE ESTÁ CORRIENDO");
 
@@ -16,6 +17,8 @@ app.get("/test", (req, res) => {
   res.send("OK");
 });
 
+
+app.use("/api/estudiantes" , estudiantesRoutes);
 
 console.log("Rutas cargadas correctamente.");
 

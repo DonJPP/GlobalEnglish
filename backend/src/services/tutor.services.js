@@ -23,17 +23,21 @@ export async function obtenerTutorPorId(id) {
   return rows[0];
 }
 
-// Crear tutor
+//crear tutor
 export async function crearTutor(data) {
-  const { nombres, apellidos, usuario, password_hash } = data;
+  const { id_tutor, nombres, apellidos, usuario, password_hash } = data;
+
+
+  if (!id_tutor) throw new Error("id_tutor es obligatorio");
 
   const [result] = await pool.query(
-    `INSERT INTO tutor (nombres, apellidos, usuario, password_hash)
-     VALUES (?, ?, ?, ?)`,
-    [nombres, apellidos, usuario, password_hash]
+    `INSERT INTO tutor (id_tutor, nombres, apellidos, usuario, password_hash)
+     VALUES (?, ?, ?, ?, ?)`,
+    [id_tutor, nombres, apellidos, usuario, password_hash]
   );
 
-  return { id_tutor: result.insertId, ...data };
+  // Ya no usamos insertId, porque el id lo definió el usuario
+  return { id_tutor, nombres, apellidos, usuario, password_hash };
 }
 
 // Actualizar tutor
