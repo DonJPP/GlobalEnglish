@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es"></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iFrame</title>
+    <link rel="stylesheet" href="Estilos/index.css">
+</head>
+
+<body>
+    <header><h1> GlobalEnglish</h1></header>
+    <nav>
+        <a href="./Secciones/inicio.html"target="Paginas">Inicio</a>
+        <a href="./Secciones/Acercade.html"target="Paginas">Acerca De Nosotros</a>
+        <a href="./Secciones/IniciarSeccion.html"target="Paginas">Iniciar sesión</a>
+        
+    </nav>
+
+    <! -- Aqui va la pagina que va a cargar en el iframe -->
+    <main>
+        <iframe name="Paginas"src="" frameborder="0"></iframe>
+    </main>
+
+
+    <script>
+        const header = document.querySelector("header");
+        const emojis = ["📘", "📚", "✏️", "📝", "🎓", "📖", "📐", "🧠"];
+        header.addEventListener("mouseenter", () => {
+        for (let i = 0; i < 10; i++) {  
+            const span = document.createElement("span");
+            span.classList.add("floating-emoji");
+                    span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            span.style.left = Math.random() * 90 + "%";
+            span.style.top = "70%";
+            header.appendChild(span);
+            setTimeout(() => span.remove(), 1800);
+        }
+        });
+    </script>
+
+</body>
+<html>
+

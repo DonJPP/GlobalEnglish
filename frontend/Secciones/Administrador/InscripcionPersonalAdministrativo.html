@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Aula</title>
+<link rel="stylesheet" href="../../Estilos/admin.css"></head>
+<body>
+
+    <header><h3>Inscribir Tutor</h3></header>
+
+    <main>
+        <p>
+            <label for="ID_Tutor">ID_Tutor</label>
+            <input type="number" id="ID_Tutor">
+
+            <label for="Nombres">Nombres</label>
+            <input type="text" id="Nombres">
+
+            <label for="Apellidos">Apellidos</label>
+            <input type="text" id="Apellidos">
+
+        </p>
+
+        <button id="btnInscribirTutor" class="btn">Inscribir Tutor</button>
+    </main>
+
+
+
+
+
+    <script>
+        document.getElementById("btnInscribirTutor").addEventListener("click", function () {
+
+            const ID_Tutor = document.getElementById("ID_Tutor").value.trim();
+            const Nombres = document.getElementById("Nombres").value.trim();
+            const Apellidos = document.getElementById("Apellidos").value.trim();
+
+            if (!ID_Tutor || !Nombres || !Apellidos ) {
+                alert("Por favor complete todos los campos.");
+                return;
+            }
+
+            // cuando se conecte con la base de datos aqui va el codigo para guardar la info en la base de datos
+            alert("Aula registrada correctamente.\n\n" +
+                  "ID_Tutor: " + ID_Tutor + "\n" +
+                  "Nombres: " + Nombres + "\n" +
+                  "Apellidos: " + Apellidos);
+        });

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Aula</title>
+<link rel="stylesheet" href="../../Estilos/admin.css"></head>
+<body>
+
+    <header><h3>Toma de Notas</h3></header>
+
+    <main>
+        <p>
+            <label for="ID_Estudiante">ID Estudiante</label>
+            <input type="number" id="ID_Estudiante">
+
+            <label for="Nota">Nota</label>
+            <input type="text" id="Nota">
+
+            <label for="Fecha">Fecha</label>
+            <input type="text" id="Fecha">
+
+            <label for="ID_Calificacion">ID Calificacion</label>
+            <input type="number" id="ID_Calificacion">
+        </p>
+
+        <button id="btnInscribirEstudiante" class="btn">Tomar Notas</button>
+    </main>
+
+
+
+
+
+    <script>
+        document.getElementById("btnInscribirEstudiante").addEventListener("click", function () {
+
+            const ID_Estudiante = document.getElementById("ID_Estudiante").value.trim();
+            const Nota = document.getElementById("Nota").value.trim();
+            const Fecha = document.getElementById("Fecha").value.trim();
+            const ID_Calificacion = document.getElementById("ID_Calificacion").value.trim();
+
+            if (!ID_Estudiante || !Nota || !Fecha || !ID_Calificacion) {
+                alert("Por favor complete todos los campos.");
+                return;
+            }
+
+            // cuando se conecte con la base de datos aqui va el codigo para guardar la info en la base de datos
+            alert("Tutor Ingresado Correctamente.\n\n" +
+                  "ID_Estudiante: " + ID_Estudiante + "\n" +
+                  "Nota: " + Nota + "\n" +
+                  "Fecha: " + Fecha + "\n" +
+                  "ID_Calificacion: " + ID_Calificacion);
+        });
+    </script>
+
+</body>
+</html>

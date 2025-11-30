@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Aula</title>
+<link rel="stylesheet" href="../../Estilos/admin.css"></head>
+<body>
+
+    <header><h3>Inscripción Estudiante</h3></header>
+
+    <main>
+        <p>
+            <label for="ID_Estudiante">ID Estudiante</label>
+            <input type="number" id="ID_Estudiante">
+
+            <label for="Nombres">Nombres</label>
+            <input type="text" id="Nombres">
+
+            <label for="Apellidos">Apellidos</label>
+            <input type="text" id="Apellidos">
+
+            <label for="N_Aula">N Aula</label>
+            <input type="number" id="N_Aula">
+        </p>
+
+        <button id="btnInscribirEstudiante" class="btn">Inscribir Estudiante</button>
+    </main>
+
+
+
+
+
+    <script>
+        document.getElementById("btnInscribirEstudiante").addEventListener("click", function () {
+
+            const ID_Estudiante = document.getElementById("ID_Estudiante").value.trim();
+            const Nombres = document.getElementById("Nombres").value.trim();
+            const Apellidos = document.getElementById("Apellidos").value.trim();
+            const N_Aula = document.getElementById("N_Aula").value.trim();
+
+            if (!ID_Estudiante || !Nombres || !Apellidos ) {
+                alert("Por favor complete todos los campos.");
+                return;
+            }
+
+            // cuando se conecte con la base de datos aqui va el codigo para guardar la info en la base de datos
+            alert("Estudiante Inscrito Correctamente.\n\n" +
+                  "ID_Estudiante: " + ID_Estudiante + "\n" +
+                  "Nombres: " + Nombres + "\n" +
+                  "Apellidos: " + Apellidos + "\n" +
+                  "N_Aula: " + N_Aula);
+        });
+    </script>
+
+</body>
+</html>

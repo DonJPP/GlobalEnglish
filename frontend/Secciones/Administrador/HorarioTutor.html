@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Aula</title>
+<link rel="stylesheet" href="../../Estilos/admin.css"></head>
+<body>
+
+    <header><h3>Horario Del Tutor</h3></header>
+
+    <main>
+        <p>
+            <label for="ID_Tutor">Identificación Del Tutor</label>
+            <input type="number" id="ID_Tutor">
+        </p>
+
+        <button id="btnHorarioTutor" class="btn">Ver Horario del Tutor</button>
+    </main>
+
+
+
+
+
+    <script>
+        document.getElementById("btnHorarioTutor").addEventListener("click", function () {
+
+            const ID_Horarios = document.getElementById("ID_Horarios").value.trim();
+            if (!ID_Tutor ) {
+                alert("Por favor complete todos los campos.");
+                return;
+            }
+
+            // cuando se conecte con la base de datos aqui va el codigo para guardar la info en la base de datos
+            alert("ID_Tutor: " + ID_Tutor);
+        });
+    </script>
+
+</body>
+</html>

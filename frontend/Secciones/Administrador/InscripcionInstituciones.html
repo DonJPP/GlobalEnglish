@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Aula</title>
+<link rel="stylesheet" href="../../Estilos/admin.css"></head>
+<body>
+
+    <header><h3>Inscripción de Instituciones</h3></header>
+
+    <main>
+        <p>
+            <label for="ID">ID Institución</label>
+            <input type="number" id="ID">
+
+            <label for="Nombre">Nombre</label>
+            <input type="text" id="Nombre">
+
+            <label for="Jornada">Jornada</label>
+            <input type="text" id="Jornada">
+
+           
+        </p>
+
+        <button id="btnGuardarInstitucion" class="btn">Guardar Institución</button>
+    </main>
+
+    <script>
+        document.getElementById("btnGuardarInstitucion").addEventListener("click", function () {
+
+            const ID = document.getElementById("ID").value.trim();
+            const Nombre = document.getElementById("Nombre").value.trim();
+            const Jornada = document.getElementById("Jornada").value.trim();
+
+            if (!ID || !Nombre || !Jornada) {
+                alert("Por favor complete todos los campos.");
+                return;
+            }
+
+            // cuando se conecte con la base de datos aqui va el codigo para guardar la info en la base de datos
+            alert("Institución Guardada Correctamente.\n\n" +
+                  "ID Institución: " + ID + "\n" +
+                  "Nombre: " + Nombre + "\n" +
+                  "Jornada: " + Jornada);
+        });
+    </script>
+
+</body>
+</html>

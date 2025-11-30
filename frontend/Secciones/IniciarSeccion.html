@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../Estilos/IniciarSeccion.css">
+</head>
+<body>
+    <header><h3>Iniciar Sección</h3></header>
+
+    <main>
+        <p>
+            <label for="rol">Tipo de usuario</label>
+            <select id="rol">
+                <option value="">Seleccione...</option>
+                <option value="Administrador">Administrador</option>
+                <option value="tutor">Tutor</option>
+                <option value="Administrativo">Administrativo</option>
+            </select>
+
+            <br><br>
+
+            <label for="userid">Usuario</label>
+            <input type="number" id="userid">
+
+            <label for="Contra">Contraseña</label>
+            <input type="password" id="Contra">
+        </p>
+
+        <button id="btnIngresar">Ingresar</button>
+    </main>
+
+    <script>
+        document.getElementById("btnIngresar").addEventListener("click", function() {
+            const rolboton = document.getElementById("rol").value.trim();
+            const usuarioboton = document.getElementById("userid").value.trim();
+            const contraboton = document.getElementById("Contra").value.trim();
+
+            //Contraseñas y usuarios de prueba 
+            if (rolboton === "" || usuarioboton === "" || contraboton === "") {
+                alert("Por favor complete todos los campos.");
+                return;
+            }
+            if (rolboton === "Administrador" && usuarioboton === "1042" && contraboton === "admin") {
+                window.open("../Secciones/Administrador.html", "_blank");
+                return;
+            }
+            if (rolboton === "Administrativo" && usuarioboton === "1043" && contraboton === "administrativo") {
+                window.open("../Secciones/Administrativo.html", "_blank");
+                return;
+            }
+            if (rolboton === "tutor" && usuarioboton === "1044" && contraboton === "tutor") {
+                window.open("../Secciones/Tutor.html", "_blank");
+                return;
+            }
+            alert("Datos incorrectos. Verifique e intente nuevamente.");
+        });
+    </script>
+</body>
+</html>

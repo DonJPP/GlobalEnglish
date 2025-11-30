@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Aula</title>
+<link rel="stylesheet" href="../../Estilos/admin.css"></head>
+<body>
+
+    <header><h3>Toma De Asistencia</h3></header>
+
+    <main>
+        <p>
+            <label for="ID_Asistencia">ID Asistencia</label>
+            <input type="number" id="ID_Estudiante">
+
+            <label for="N_Aula">N_Aula</label>
+            <input type="text" id="Nombres">
+
+            <label for="ID_Estudiante">ID Estudiante</label>
+            <input type="text" id="Apellidos">
+
+            <label for="Fecha">Fecha</label>
+            <input type="number" id="N_Aula">
+        </p>
+
+        <button id="btnTomarAsistencia" class="btn">Tomar Asistencia</button>
+    </main>
+
+
+
+
+
+    <script>
+        document.getElementById("btnTomarAsistencia").addEventListener("click", function () {
+
+            const ID_Asistencia = document.getElementById("ID_Asistencia").value.trim();
+            const N_Aula = document.getElementById("N_Aula").value.trim();
+            const ID_Estudiante = document.getElementById("ID_Estudiante").value.trim();
+            const Fecha = document.getElementById("Fecha").value.trim();
+
+            if (!ID_Asistencia || !N_Aula || !ID_Estudiante || !Fecha) {
+                alert("Por favor complete todos los campos.");
+                return;
+            }
+
+            // cuando se conecte con la base de datos aqui va el codigo para guardar la info en la base de datos
+            alert("Aula registrada correctamente.\n\n" +
+                  "ID_Asistencia: " + ID_Asistencia + "\n" +
+                  "N_Aula: " + N_Aula + "\n" +
+                  "ID_Estudiante: " + ID_Estudiante + "\n" +
+                  "Fecha: " + Fecha);
+        });
+    </script>
+
+</body>
+</html>

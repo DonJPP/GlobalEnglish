@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Aula</title>
+<link rel="stylesheet" href="../../Estilos/admin.css"></head>
+<body>
+
+    <header><h3>Registro de Horarios</h3></header>
+
+    <main>
+        <p>
+            <label for="ID_Horarios">ID Horarios</label>
+            <input type="number" id="ID_Horarios">
+
+            <label for="N_Aula">N Aula</label>
+            <input type="text" id="N Aula">
+
+            <label for="Hora_Inicio">Hora Inicio</label>
+            <input type="text" id="Hora_Inicio">
+
+            <label for="Hora_Fin">Hora Fin</label>
+            <input type="number" id="Hora_Fin">
+
+            <label for="Minutos">Minutos</label>
+            <input type="number" id="Minutos">
+        </p>
+
+        <button id="btnCrearHorario" class="btn">Crear Horario</button>
+    </main>
+
+
+
+
+
+    <script>
+        document.getElementById("btnCrearHorario").addEventListener("click", function () {
+
+            const ID_Horarios = document.getElementById("ID_Horarios").value.trim();
+            const N_Aula = document.getElementById("N_Aula").value.trim();
+            const Hora_Inicio = document.getElementById("Hora_Inicio").value.trim();
+            const Hora_Fin = document.getElementById("Hora_Fin").value.trim();
+            const Minutos = document.getElementById("Minutos").value.trim();
+
+            if (!ID_Horarios || !N_Aula || !Hora_Inicio || !Hora_Fin || !Minutos) {
+                alert("Por favor complete todos los campos.");
+                return;
+            }
+
+            // cuando se conecte con la base de datos aqui va el codigo para guardar la info en la base de datos
+            alert("Horario Creado Correctamente.\n\n" +
+                  "ID_Horarios: " + ID_Horarios + "\n" +
+                  "N_Aula: " + N_Aula + "\n" +
+                  "Hora_Inicio: " + Hora_Inicio + "\n" +
+                  "Hora_Fin: " + Hora_Fin +"\n" +
+                  "Minutos: " + Minutos);
+        });
+    </script>
+
+</body>
+</html>

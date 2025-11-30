@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Aula</title>
+<link rel="stylesheet" href="../../Estilos/admin.css"></head>
+<body>
+
+    <header><h3>Registro de Sedes</h3></header>
+
+    <main>
+        <p>
+            <label for="ID_Institucion">ID Institucion</label>
+            <input type="number" id="ID_Institucion">
+
+            <label for="Direccion">Direccion</label>
+            <input type="text" id="Direccion">
+
+            <label for="ID_Sede">ID Sede</label>
+            <input type="text" id="ID_Sede">
+
+            <label for="Sede_Principal">Sede Principal</label>
+            <input type="number" id="Sede_Principal">
+        </p>
+
+        <button id="btnGuardarSede" class="btn">Guardar Sede</button>
+    </main>
+
+
+
+
+
+    <script>
+        document.getElementById("btnGuardarSede").addEventListener("click", function () {
+
+            const ID_Institucion = document.getElementById("ID_Institucion").value.trim();
+            const Direccion = document.getElementById("Direccion").value.trim();
+            const ID_Sede = document.getElementById("ID_Sede").value.trim();
+            const Sede_Principal = document.getElementById("Sede_Principal").value.trim();
+
+            if (!ID_Institucion || !Direccion || !ID_Sede || !Sede_Principal) {
+                alert("Por favor complete todos los campos.");
+                return;
+            }
+
+            // cuando se conecte con la base de datos aqui va el codigo para guardar la info en la base de datos
+            alert("Sede Ingresada Correctamente.\n\n" +
+                  "ID_Institucion: " + ID_Institucion + "\n" +
+                  "Direccion: " + Direccion + "\n" +
+                  "ID_Sede: " + ID_Sede + "\n" +
+                  "Sede_Principal: " + Sede_Principal);
+        });
+    </script>
+
+</body>
+</html>

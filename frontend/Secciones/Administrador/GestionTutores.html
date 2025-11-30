@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Aula</title>
+<link rel="stylesheet" href="../../Estilos/admin.css"></head>
+<body>
+
+    <header><h3>Asignar Tutor a Una Aula</h3></header>
+
+    <main>
+        <p>
+            <label for="N_Aula">N Aula</label>
+            <input type="number" id="ID_Tutor">
+
+            <label for="ID_Tutor">ID Tutor</label>
+            <input type="text" id="ID_Tutor">
+
+            <label for="FechaAsignacion">Fecha Asignacion</label>
+            <input type="text" id="Apellidos">
+
+            <label for="ID_Asignacion">ID Asignacion</label>
+            <input type="number" id="ID_Asignacion">
+        </p>
+
+        <button id="btnAsignarTutorAula" class="btn">Asignar Tutor al Aula</button>
+    </main>
+
+
+
+
+
+    <script>
+        document.getElementById("btnAsignarTutorAula").addEventListener("click", function () {
+
+            const N_Aula = document.getElementById("N_Aula").value.trim();
+            const ID_Tutor = document.getElementById("ID_Tutor").value.trim();
+            const FechaAsignacion = document.getElementById("FechaAsignacion").value.trim();
+            const ID_Asignacion = document.getElementById("ID_Asignacion").value.trim();
+
+            if (!N_Aula || !ID_Tutor || !FechaAsignacion || !ID_Asignacion ) {
+                alert("Por favor complete todos los campos.");
+                return;
+            }
+
+            // cuando se conecte con la base de datos aqui va el codigo para guardar la info en la base de datos
+            alert("Tutor Asignado al Aula Correctamente.\n\n" +
+                  "N_Aula: " + N_Aula + "\n" +
+                  "ID_Tutor: " + Nombres + "\n" +
+                  "FechaAsignacion: " + FechaAsignacion + "\n" +
+                  "ID_Asignacion: " + ID_Asignacion +"\n" +
+                  "Contraseña: " + Contraseña);
+        });
+    </script>
+
+
+    <header><h3>Cambio de Tutor</h3></header>
+     <main>
+         <p>
+            <label for="N_Aula">N Aula</label>
+            <input type="number" id="ID_Tutor">
+
+            <label for="ID_Tutor">ID Tutor</label>
+            <input type="text" id="ID_Tutor">
+
+            <label for="Fecha">Fecha</label>
+            <input type="text" id="Apellidos">
+
+            <label for="Nota">Nota</label>
+            <input type="number" id="Nota">
+
+            <label for="ID_TutorNuevo">ID Tutor Nuevo</label>
+            <input type="number" id="ID_TutorNuevo">
+        </p>
+
+        <button id="btnCambiarTutor" class="btn">Cambiar Tutor</button>
+    </main>
+
+     <script>
+        document.getElementById("btnCambiarTutor").addEventListener("click", function () {
+
+            const N_Aula = document.getElementById("N_Aula").value.trim();
+            const ID_Tutor = document.getElementById("ID_Tutor").value.trim();
+            const Fecha = document.getElementById("Fecha").value.trim();
+            const Nota = document.getElementById("Nota").value.trim();
+            const ID_TutorNuevo = document.getElementById("ID_TutorNuevo").value.trim();
+
+            if (!N_Aula || !ID_Tutor || !Fecha || !Nota || !ID_TutorNuevo) {
+                alert("Por favor complete todos los campos.");
+                return;
+            }
+
+            // cuando se conecte con la base de datos aqui va el codigo para guardar la info en la base de datos
+            alert("Tutor Cmabiado Correctamente.\n\n" +
+                  "N_Aula: " + N_Aula + "\n" +
+                  "ID_Tutor: " + Nombres + "\n" +
+                  "FechaAsignacion: " + Fecha + "\n" +
+                  "Nota: " + Nota +"\n" +
+                  "ID_TutorNuevo: " + ID_TutorNuevo);
+        });
+    </script>
+
+
+
+</body>
+</html>
