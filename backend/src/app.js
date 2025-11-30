@@ -11,6 +11,9 @@ import cambioTutorRoutes from "./routes/cambioTutor.routes.js";
 import asistenciaTutorRoutes from "./routes/asistenciaTutor.routes.js";
 import asistenciaEstudianteRoutes from "./routes/asistenciaEstudiante.routes.js";
 import calificacionesRoutes from "./routes/calificaciones.routes.js";
+import motivoRoutes from "./routes/motivoInasistencia.routes.js";
+import fechaReposicionRoutes from "./routes/fechaReposicion.routes.js";
+import reportesRoutes from "./routes/reportes.routes.js";
 
 
 console.log(">>> ESTE ES EL APP.JS QUE ESTÁ CORRIENDO");
@@ -33,6 +36,10 @@ app.use("/api/cambios-tutor", cambioTutorRoutes);
 app.use("/api/asistencia-tutor", asistenciaTutorRoutes);
 app.use("/api/asistencia-estudiante", asistenciaEstudianteRoutes);
 app.use("/api/calificaciones", calificacionesRoutes);
+app.use("/api/motivos-inasistencia", motivoRoutes);
+app.use("/api/fecha-reposicion", fechaReposicionRoutes);
+app.use("/api/reportes", reportesRoutes);
+
 
 app.get("/test", (req, res) => {
   console.log(">>> Entró al endpoint /test");

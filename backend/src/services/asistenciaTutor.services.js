@@ -1,4 +1,3 @@
-// GLOBALENGLISH/backend/src/services/asistenciaTutor.services.js
 import pool from "../config/db.js";
 
 console.log(">>> asistenciaTutor.services.js cargado");
@@ -28,10 +27,20 @@ function validarAsistenciaTutor(data, { esCreacion = false } = {}) {
     }
   }
 
+  if (!data.asistio) {
+    errores.push("asistio es obligatorio (SI/NO)");
+  } else {
+    const a = String(data.asistio).toUpperCase();
+    if (!["SI", "NO"].includes(a)) {
+      errores.push("asistio debe ser 'SI' o 'NO'");
+    }
+  }
+
   return errores;
 }
 
-// Verificar que aula exista
+// ---------- Helpers BD ----------
+
 async function existeAula(id_aula) {
   const [rows] = await pool.query(
     "SELECT id_aula FROM aula WHERE id_aula = ?",
@@ -40,7 +49,6 @@ async function existeAula(id_aula) {
   return rows.length > 0;
 }
 
-// Verificar que tutor exista
 async function existeTutor(id_tutor) {
   const [rows] = await pool.query(
     "SELECT id_tutor FROM tutor WHERE id_tutor = ?",
@@ -49,16 +57,14 @@ async function existeTutor(id_tutor) {
   return rows.length > 0;
 }
 
-// Obtener relación actual aula-tutor
 async function obtenerRelacionAulaTutor(id_aula) {
   const [rows] = await pool.query(
     "SELECT * FROM relacion_aula_tutor WHERE id_aula = ?",
     [id_aula]
   );
-  return rows[0]; // puede ser undefined
+  return rows[0];
 }
 
-// Verificar si ya hay asistencia para esa combinación
 async function existeAsistenciaEnFecha(id_aula, id_tutor, fecha) {
   const [rows] = await pool.query(
     `SELECT id_asistencia 
@@ -69,15 +75,21 @@ async function existeAsistenciaEnFecha(id_aula, id_tutor, fecha) {
   return rows.length > 0;
 }
 
+async function existeMotivo(id_motivo) {
+  const [rows] = await pool.query(
+    "SELECT id_motivo FROM motivo_inasistencia WHERE id_motivo = ?",
+    [id_motivo]
+  );
+  return rows.length > 0;
+}
+
 // ================== CRUD ==================
 
-// LISTAR TODAS
 export async function obtenerAsistenciasTutor() {
   const [rows] = await pool.query("SELECT * FROM asistencia_tutor");
   return rows;
 }
 
-// OBTENER POR ID
 export async function obtenerAsistenciaTutorPorId(id_asistencia) {
   const [rows] = await pool.query(
     "SELECT * FROM asistencia_tutor WHERE id_asistencia = ?",
@@ -86,7 +98,6 @@ export async function obtenerAsistenciaTutorPorId(id_asistencia) {
   return rows[0];
 }
 
-// OBTENER POR TUTOR (opcionalmente por rango de fechas)
 export async function obtenerAsistenciasPorTutor(id_tutor, filtros = {}) {
   const params = [id_tutor];
   let query = `
@@ -111,7 +122,6 @@ export async function obtenerAsistenciasPorTutor(id_tutor, filtros = {}) {
   return rows;
 }
 
-// OBTENER POR AULA
 export async function obtenerAsistenciasPorAula(id_aula) {
   const [rows] = await pool.query(
     "SELECT * FROM asistencia_tutor WHERE id_aula = ? ORDER BY fecha DESC",
@@ -120,20 +130,24 @@ export async function obtenerAsistenciasPorAula(id_aula) {
   return rows;
 }
 
-// CREAR REGISTRO DE ASISTENCIA
+// CREAR
 export async function crearAsistenciaTutor(data) {
   const errores = validarAsistenciaTutor(data, { esCreacion: true });
   if (errores.length > 0) {
-    const error = new Error(errores.join(", "));
-    error.tipo = "VALIDACION";
-    throw error;
+    const err = new Error(errores.join(", "));
+    err.tipo = "VALIDACION";
+    throw err;
   }
 
   const id_aula = Number(data.id_aula);
   const id_tutor = Number(data.id_tutor);
   const fecha = data.fecha;
+  const asistio = String(data.asistio).toUpperCase();
+  const id_motivo =
+    data.id_motivo !== undefined && data.id_motivo !== null
+      ? Number(data.id_motivo)
+      : null;
 
-  // Validar existencia
   if (!(await existeAula(id_aula))) {
     const error = new Error("El aula indicada no existe");
     error.tipo = "VALIDACION";
@@ -146,7 +160,6 @@ export async function crearAsistenciaTutor(data) {
     throw error;
   }
 
-  // Validar relación aula-tutor actual
   const relacion = await obtenerRelacionAulaTutor(id_aula);
   if (!relacion) {
     const error = new Error(
@@ -164,7 +177,22 @@ export async function crearAsistenciaTutor(data) {
     throw error;
   }
 
-  // Evitar duplicar asistencia para misma fecha/aula/tutor
+  // Motivo según asistio
+  if (asistio === "NO") {
+    if (!id_motivo) {
+      const error = new Error(
+        "id_motivo es obligatorio cuando asistio = 'NO'"
+      );
+      error.tipo = "VALIDACION";
+      throw error;
+    }
+    if (isNaN(id_motivo) || !(await existeMotivo(id_motivo))) {
+      const error = new Error("El motivo de inasistencia indicado no existe");
+      error.tipo = "VALIDACION";
+      throw error;
+    }
+  }
+
   if (await existeAsistenciaEnFecha(id_aula, id_tutor, fecha)) {
     const error = new Error(
       "Ya existe un registro de asistencia para este tutor, aula y fecha."
@@ -173,11 +201,11 @@ export async function crearAsistenciaTutor(data) {
     throw error;
   }
 
-  // Insertar
   const [result] = await pool.query(
-    `INSERT INTO asistencia_tutor (id_aula, id_tutor, fecha)
-     VALUES (?, ?, ?)`,
-    [id_aula, id_tutor, fecha]
+    `INSERT INTO asistencia_tutor 
+       (id_aula, id_tutor, fecha, asistio, id_motivo)
+     VALUES (?, ?, ?, ?, ?)`,
+    [id_aula, id_tutor, fecha, asistio, id_motivo]
   );
 
   return {
@@ -185,21 +213,28 @@ export async function crearAsistenciaTutor(data) {
     id_aula,
     id_tutor,
     fecha,
+    asistio,
+    id_motivo,
   };
 }
 
-// ACTUALIZAR (en caso de correcciones)
+// ACTUALIZAR
 export async function actualizarAsistenciaTutor(id_asistencia, data) {
   const errores = validarAsistenciaTutor(data, { esCreacion: false });
   if (errores.length > 0) {
-    const error = new Error(errores.join(", "));
-    error.tipo = "VALIDACION";
-    throw error;
+    const err = new Error(errores.join(", "));
+    err.tipo = "VALIDACION";
+    throw err;
   }
 
   const id_aula = Number(data.id_aula);
   const id_tutor = Number(data.id_tutor);
   const fecha = data.fecha;
+  const asistio = String(data.asistio).toUpperCase();
+  const id_motivo =
+    data.id_motivo !== undefined && data.id_motivo !== null
+      ? Number(data.id_motivo)
+      : null;
 
   if (!(await existeAula(id_aula))) {
     const error = new Error("El aula indicada no existe");
@@ -213,7 +248,6 @@ export async function actualizarAsistenciaTutor(id_asistencia, data) {
     throw error;
   }
 
-  // Validar relación aula-tutor vigente
   const relacion = await obtenerRelacionAulaTutor(id_aula);
   if (!relacion) {
     const error = new Error(
@@ -225,17 +259,32 @@ export async function actualizarAsistenciaTutor(id_asistencia, data) {
 
   if (Number(relacion.id_tutor) !== id_tutor) {
     const error = new Error(
-      `El tutor indicado no coincide con el tutor asignado actualmente al aula.`
+      "El tutor indicado no coincide con el tutor asignado actualmente al aula."
     );
     error.tipo = "VALIDACION";
     throw error;
   }
 
+  if (asistio === "NO") {
+    if (!id_motivo) {
+      const error = new Error(
+        "id_motivo es obligatorio cuando asistio = 'NO'"
+      );
+      error.tipo = "VALIDACION";
+      throw error;
+    }
+    if (isNaN(id_motivo) || !(await existeMotivo(id_motivo))) {
+      const error = new Error("El motivo de inasistencia indicado no existe");
+      error.tipo = "VALIDACION";
+      throw error;
+    }
+  }
+
   await pool.query(
     `UPDATE asistencia_tutor
-     SET id_aula = ?, id_tutor = ?, fecha = ?
+     SET id_aula = ?, id_tutor = ?, fecha = ?, asistio = ?, id_motivo = ?
      WHERE id_asistencia = ?`,
-    [id_aula, id_tutor, fecha, id_asistencia]
+    [id_aula, id_tutor, fecha, asistio, id_motivo, id_asistencia]
   );
 
   return {
@@ -243,10 +292,11 @@ export async function actualizarAsistenciaTutor(id_asistencia, data) {
     id_aula,
     id_tutor,
     fecha,
+    asistio,
+    id_motivo,
   };
 }
 
-// ELIMINAR
 export async function eliminarAsistenciaTutor(id_asistencia) {
   await pool.query(
     "DELETE FROM asistencia_tutor WHERE id_asistencia = ?",
