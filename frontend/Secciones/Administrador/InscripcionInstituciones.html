@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Inscripción de Instituciones</title>
+  <link rel="stylesheet" href="../../Estilos/admin.css">
+</head>
+
+<body>
+
+  <header>
+    <h3>Inscripción de Instituciones</h3>
+  </header>
+
+  <main>
+    <p>
+      <label for="Nombre">Nombre</label>
+      <input type="text" id="Nombre">
+
+      <label for="Jornada">Jornada</label>
+      <select id="Jornada">
+        <option value="">Seleccione una jornada</option>
+        <option value="MAÑANA">MAÑANA</option>
+        <option value="TARDE">TARDE</option>
+        <option value="MIXTA">MIXTA</option>
+      </select>
+    </p>
+
+    <button id="btnGuardarInstitucion" class="btn">Guardar Institución</button>
+  </main>
+
+  <script src="../../js/conexion.js"></script>
+  <script>
+    document
+      .getElementById("btnGuardarInstitucion")
+      .addEventListener("click", async function () {
+
+        const nombre = document.getElementById("Nombre").value.trim();
+        const jornada = document.getElementById("Jornada").value.trim();
+
+        if (!nombre || !jornada) {
+          alert("Por favor complete todos los campos.");
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/instituciones`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              nombre,
+              jornada
+            })
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            alert(
+              "Institución guardada correctamente.\n\n" +
+              "ID: " + data.id_institucion + "\n" +
+              "Nombre: " + data.nombre + "\n" +
+              "Jornada: " + data.jornada
+            );
+
+            document.getElementById("Nombre").value = "";
+            document.getElementById("Jornada").value = "";
+          } else {
+            alert("Error: " + (data.error || data.message || "No se pudo guardar la institución"));
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Error de conexión con el servidor");
+        }
+      });
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reporte de Notas del Estudiante</title>
+  <link rel="stylesheet" href="../../Estilos/admin.css" />
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    #resultado {
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h3>Reporte de Notas del Estudiante</h3>
+  </header>
+
+  <main>
+    <p>
+      <label for="ID_Estudiante">ID Estudiante</label>
+      <input type="number" id="ID_Estudiante" />
+
+      <label for="Desde">Desde (opcional)</label>
+      <input type="date" id="Desde" />
+
+      <label for="Hasta">Hasta (opcional)</label>
+      <input type="date" id="Hasta" />
+    </p>
+
+    <button id="btnVerNotas" class="btn">Ver Notas</button>
+
+    <div id="resultado"></div>
+  </main>
+
+  <script>
+    // Ajusta el puerto si tu backend usa otro
+    const API_BASE = "http://localhost:3000";
+
+    document
+      .getElementById("btnVerNotas")
+      .addEventListener("click", async function () {
+        const idEstudiante = document
+          .getElementById("ID_Estudiante")
+          .value.trim();
+        const desde = document.getElementById("Desde").value.trim();
+        const hasta = document.getElementById("Hasta").value.trim();
+
+        if (!idEstudiante) {
+          alert("Por favor ingrese el ID del estudiante.");
+          return;
+        }
+
+        const resultadoDiv = document.getElementById("resultado");
+        resultadoDiv.innerHTML = "<p>Cargando notas...</p>";
+
+        // Construir URL con query params opcionales
+        let url = `${API_BASE}/api/reportes/notas-estudiante/${encodeURIComponent(
+          idEstudiante
+        )}`;
+
+        const params = [];
+        if (desde) params.push(`desde=${encodeURIComponent(desde)}`);
+        if (hasta) params.push(`hasta=${encodeURIComponent(hasta)}`);
+        if (params.length > 0) {
+          url += "?" + params.join("&");
+        }
+
+        try {
+          const resp = await fetch(url);
+          const data = await resp.json();
+
+          if (!resp.ok) {
+            const msg =
+              data.error ||
+              data.mensaje ||
+              "No se pudo obtener el reporte de notas.";
+            resultadoDiv.innerHTML = `<p style="color:red;">${msg}</p>`;
+            return;
+          }
+
+          // data puede ser:
+          // - { meta: { tiene_notas:false, ... }, calificaciones: [] }
+          // - o { estudiante, institucion, aula, calificaciones, promedio }
+
+          if (data.meta && data.meta.tiene_notas === false) {
+            resultadoDiv.innerHTML =
+              "<p>El estudiante no tiene calificaciones registradas en el rango indicado.</p>";
+            return;
+          }
+
+          const est = data.estudiante;
+          const inst = data.institucion;
+          const aula = data.aula;
+          const calificaciones = data.calificaciones || [];
+          const promedio = data.promedio;
+
+          if (calificaciones.length === 0) {
+            resultadoDiv.innerHTML =
+              "<p>El estudiante no tiene calificaciones registradas.</p>";
+            return;
+          }
+
+          let html = "";
+
+          // Encabezado con info del estudiante
+          html += `<h4>Estudiante: ${est.nombres} ${est.apellidos} (ID: ${est.id_estudiante})</h4>`;
+          html += `<p><strong>Institución:</strong> ${inst.nombre} (ID: ${inst.id_institucion})<br>`;
+          html += `<strong>Aula:</strong> ${aula.id_aula} - Grado: ${aula.grado} - Programa: ${aula.programa}</p>`;
+
+          // Tabla de notas
+          html += `
+            <table>
+              <thead>
+                <tr>
+                  <th>ID Calificación</th>
+                  <th>Fecha</th>
+                  <th>Nota</th>
+                </tr>
+              </thead>
+              <tbody>
+          `;
+
+          calificaciones.forEach((c) => {
+            html += `
+              <tr>
+                <td>${c.id_calificacion}</td>
+                <td>${c.fecha}</td>
+                <td>${c.calificacion}</td>
+              </tr>
+            `;
+          });
+
+          html += `
+              </tbody>
+            </table>
+          `;
+
+          // Promedio
+          html += `<p><strong>Promedio:</strong> ${
+            promedio !== null ? promedio.toFixed(2) : "N/A"
+          }</p>`;
+
+          resultadoDiv.innerHTML = html;
+        } catch (err) {
+          console.error(err);
+          resultadoDiv.innerHTML =
+            '<p style="color:red;">Error de conexión con el servidor.</p>';
+        }
+      });
+  </script>
+</body>
+</html>

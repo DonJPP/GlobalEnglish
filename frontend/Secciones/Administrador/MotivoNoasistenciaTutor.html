@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Motivo de No Asistencia del Tutor</title>
+    <link rel="stylesheet" href="../../Estilos/admin.css">
+</head>
+<body>
+
+<header><h3>Motivo De No Asistencia Del Tutor</h3></header>
+
+<main>
+    <!-- Sección 1: Crear Motivo -->
+    <section>
+        <p>
+            <label for="Motivo">Motivo</label>
+            <!-- Debe ser texto, no número -->
+            <input type="text" id="Motivo" maxlength="50" placeholder="Ej: Enfermedad, capacitación, etc.">
+        </p>
+
+        <button id="btnAgregarMotivo" class="btn">Agregar Motivo</button>
+    </section>
+    
+</main>
+
+<script src="../../js/conexion.js"></script>
+
+<script>
+    // ---- Sección 1: Crear Motivo ----
+    document.getElementById("btnAgregarMotivo").addEventListener("click", async function () {
+        const razon = document.getElementById("Motivo").value.trim();
+
+        if (!razon) {
+            alert("Por favor escriba un motivo.");
+            return;
+        }
+
+        if (razon.length > 50) {
+            alert("La razón no puede superar 50 caracteres.");
+            return;
+        }
+
+        const nuevoMotivo = { razon };
+
+        try {
+            // Ajusta la ruta si en tu router se llama distinto (ej: /motivos-inasistencia)
+            const response = await fetch(`${API_URL}/motivos-inasistencia`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(nuevoMotivo)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert("Motivo creado correctamente.\n\n" +
+                      "ID Motivo: " + data.id_motivo + "\n" +
+                      "Razón: " + data.razon);
+
+                // Opcional: rellenar el campo de ListaMotivos con el ID recién creado
+                const listaMotivosInput = document.getElementById("ListaMotivos");
+                if (listaMotivosInput) {
+                    listaMotivosInput.value = data.id_motivo;
+                }
+
+                document.getElementById("Motivo").value = "";
+            } else {
+                alert("Error: " + (data.error || data.message || "No se pudo crear el motivo"));
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Error de conexión con el servidor");
+        }
+    });
+

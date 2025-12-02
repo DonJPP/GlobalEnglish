@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Verificar Asistencia del Tutor</title>
+  <link rel="stylesheet" href="../../Estilos/admin.css" />
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    #resultado {
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h3>Verificar Asistencia del Tutor</h3>
+  </header>
+
+  <main>
+    <p>
+      <label for="ID_Tutor">Identificación del Tutor</label>
+      <input type="number" id="ID_Tutor" />
+    </p>
+
+    <button id="btnVerificarAsistenciaTutor" class="btn">
+      Verificar Asistencia Tutor
+    </button>
+
+    <div id="resultado"></div>
+  </main>
+
+  <script>
+    const API_BASE = "http://localhost:3000"; // ajusta si tu backend usa otro puerto
+
+    document
+      .getElementById("btnVerificarAsistenciaTutor")
+      .addEventListener("click", async function () {
+        const idTutorInput = document.getElementById("ID_Tutor");
+        const idTutor = idTutorInput.value.trim();
+
+        if (!idTutor) {
+          alert("Por favor ingrese la identificación del tutor.");
+          return;
+        }
+
+        const resultadoDiv = document.getElementById("resultado");
+        resultadoDiv.innerHTML = "<p>Cargando asistencias...</p>";
+
+        try {
+          const resp = await fetch(
+            `${API_BASE}/api/reportes/asistencia-tutor/${encodeURIComponent(
+              idTutor
+            )}`
+          );
+
+          const data = await resp.json();
+
+          if (!resp.ok) {
+            // 404 u otro error desde el backend
+            const msg =
+              data.mensaje ||
+              data.error ||
+              "No se pudo obtener la asistencia del tutor.";
+            resultadoDiv.innerHTML = `<p style="color:red;">${msg}</p>`;
+            return;
+          }
+
+          if (!Array.isArray(data) || data.length === 0) {
+            resultadoDiv.innerHTML =
+              '<p>El tutor no tiene asistencias registradas.</p>';
+            return;
+          }
+
+          // Construir tabla
+          let html = "";
+          const tutorNombreCompleto =
+            data[0].tutor_nombres + " " + data[0].tutor_apellidos;
+
+          html += `<h4>Historial de asistencia de: ${tutorNombreCompleto} (ID: ${data[0].id_tutor})</h4>`;
+
+          html += `
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Aula</th>
+                  <th>Grado</th>
+                  <th>Programa</th>
+                  <th>Institución</th>
+                  <th>Sede</th>
+                  <th>Asistió</th>
+                  <th>Motivo (si NO)</th>
+                </tr>
+              </thead>
+              <tbody>
+          `;
+
+          data.forEach((fila) => {
+            html += `
+              <tr>
+                <td>${fila.fecha}</td>
+                <td>${fila.id_aula}</td>
+                <td>${fila.grado}</td>
+                <td>${fila.programa}</td>
+                <td>${fila.institucion}</td>
+                <td>${fila.direccion_completa}</td>
+                <td>${fila.asistio}</td>
+                <td>${fila.motivo_inasistencia || ""}</td>
+              </tr>
+            `;
+          });
+
+          html += `
+              </tbody>
+            </table>
+          `;
+
+          resultadoDiv.innerHTML = html;
+        } catch (err) {
+          console.error(err);
+          resultadoDiv.innerHTML =
+            '<p style="color:red;">Error de conexión con el servidor.</p>';
+        }
+      });
+  </script>
+</body>
+</html>
+

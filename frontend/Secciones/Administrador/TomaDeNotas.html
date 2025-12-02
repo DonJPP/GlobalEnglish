@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Toma de Notas</title>
+  <link rel="stylesheet" href="../../Estilos/admin.css" />
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    #resultado {
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h3>Toma de Notas</h3>
+  </header>
+
+  <main>
+    <p>
+      <label for="ID_Estudiante">ID Estudiante</label>
+      <input type="number" id="ID_Estudiante" />
+
+      <label for="Nota">Nota (0 a 5)</label>
+      <input type="number" id="Nota" step="0.1" min="0" max="5" />
+
+      <label for="Fecha">Fecha</label>
+      <input type="date" id="Fecha" />
+    </p>
+
+    <button id="btnTomarNota" class="btn">Tomar Nota</button>
+
+    <div id="resultado"></div>
+  </main>
+
+  <script>
+    // Ajusta el puerto si tu backend usa otro
+    const API_BASE = "http://localhost:3000";
+
+    document
+      .getElementById("btnTomarNota")
+      .addEventListener("click", async function () {
+        const idEstudiante = document.getElementById("ID_Estudiante").value.trim();
+        const nota = document.getElementById("Nota").value.trim();
+        const fecha = document.getElementById("Fecha").value.trim();
+
+        if (!idEstudiante || !nota || !fecha) {
+          alert("Por favor complete todos los campos.");
+          return;
+        }
+
+        const numNota = Number(nota);
+        if (isNaN(numNota) || numNota < 0 || numNota > 5) {
+          alert("La nota debe ser un número entre 0 y 5.");
+          return;
+        }
+
+        const payload = {
+          id_estudiante: Number(idEstudiante),
+          fecha: fecha,              // YYYY-MM-DD
+          calificacion: numNota,
+        };
+
+        const resultadoDiv = document.getElementById("resultado");
+        resultadoDiv.innerHTML = "<p>Registrando nota...</p>";
+
+        try {
+          const resp = await fetch(`${API_BASE}/api/calificaciones`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await resp.json();
+
+          if (!resp.ok) {
+            const msg =
+              data.error ||
+              data.mensaje ||
+              "No se pudo registrar la calificación.";
+            alert("Error al registrar la calificación:\n\n" + msg);
+            resultadoDiv.innerHTML = `<p style="color:red;">${msg}</p>`;
+            return;
+          }
+
+          // data: { id_calificacion, id_estudiante, fecha, calificacion }
+          alert(
+            "Calificación registrada correctamente.\n\n" +
+              "ID Calificación: " +
+              data.id_calificacion +
+              "\n" +
+              "ID Estudiante: " +
+              data.id_estudiante +
+              "\n" +
+              "Fecha: " +
+              data.fecha +
+              "\n" +
+              "Nota: " +
+              data.calificacion
+          );
+
+          resultadoDiv.innerHTML = `
+            <p>Última calificación registrada:</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID Calificación</th>
+                  <th>ID Estudiante</th>
+                  <th>Fecha</th>
+                  <th>Nota</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>${data.id_calificacion}</td>
+                  <td>${data.id_estudiante}</td>
+                  <td>${data.fecha}</td>
+                  <td>${data.calificacion}</td>
+                </tr>
+              </tbody>
+            </table>
+          `;
+        } catch (err) {
+          console.error(err);
+          alert("Error de conexión con el servidor.");
+          resultadoDiv.innerHTML =
+            '<p style="color:red;">Error de conexión con el servidor.</p>';
+        }
+      });
+  </script>
+</body>
+</html>

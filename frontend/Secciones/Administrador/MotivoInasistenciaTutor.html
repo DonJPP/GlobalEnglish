@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Aula</title>
+<link rel="stylesheet" href="../../Estilos/admin.css"></head>
+<body>
+
+    <header><h3>Motivo De No Asistencia Del Tutor</h3></header>
+
+
+    <main>
+        <p>
+            <label for="ListaMotivos">Lista Motivos</label>
+            <input type="number" id="ListaMotivos">
+
+            <label for="ID_Tutor">ID Tutor</label>
+            <input type="number" id="ID_Tutor">
+
+            <label for="Notas">Notas</label>
+            <input type="number" id="Notas">
+        </p>
+
+        <button id="btnRegistrarInasistencia" class="btn">Registrar Inasistencia</button>
+    </main>
+
+    <script>
+        document.getElementById("btnRegistrarInasistencia").addEventListener("click", function () {
+
+            const ListaMotivos = document.getElementById("ListaMotivos").value.trim();
+            const ID_Tutor = document.getElementById("ID_Tutor").value.trim();
+            const Notas = document.getElementById("Notas").value.trim();
+            if (!ListaMotivos || !ID_Tutor || !Notas ) {
+                alert("Por favor complete todos los campos.");
+                return;
+            }
+
+            // cuando se conecte con la base de datos aqui va el codigo para guardar la info en la base de datos
+            alert("Inasistencia registrada Correctamente.\n\n" +
+                  "ListaMotivos: " + ListaMotivos + "\n" +
+                  "ID_Tutor: " + ID_Tutor + "\n" +
+                  "Notas: " + Notas);
+        });
+    </script>
+
+</body>
+</html>

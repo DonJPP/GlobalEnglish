@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Toma de Asistencia - Estudiante</title>
+  <link rel="stylesheet" href="../../Estilos/admin.css" />
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    #resultado {
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h3>Toma de Asistencia del Estudiante</h3>
+  </header>
+
+  <main>
+    <p>
+      <label for="ID_Aula">N° Aula</label>
+      <!-- AHORA ES UN SELECT (ANTES ERA input type="number") -->
+      <select id="ID_Aula">
+        <option value="">Seleccione un aula</option>
+        <!-- Se llena dinámicamente con las aulas reales -->
+      </select>
+
+      <label for="ID_Estudiante">ID Estudiante</label>
+      <input type="number" id="ID_Estudiante" />
+
+      <label for="Fecha">Fecha</label>
+      <input type="date" id="Fecha" />
+    </p>
+
+    <button id="btnTomarAsistencia" class="btn">Tomar Asistencia</button>
+
+    <div id="resultado"></div>
+  </main>
+
+  <script>
+    // Ajusta el puerto si tu backend usa otro
+    const API_BASE = "http://localhost:3000";
+
+    // 🔹 NUEVO: cargar aulas reales en el select de N° Aula
+    async function cargarAulas() {
+      const selectAula = document.getElementById("ID_Aula");
+
+      try {
+        // Usa la ruta que tengas definida para listar aulas
+        // Si tus otros formularios usan `${API_URL}/aulas`,
+        // acá podría ser: `${API_BASE}/aulas` o `${API_BASE}/api/aulas`
+        const resp = await fetch(`${API_BASE}/api/aulas`);
+        if (!resp.ok) {
+          throw new Error("No se pudieron obtener las aulas");
+        }
+
+        const aulas = await resp.json();
+
+        // Dejar la opción por defecto
+        selectAula.innerHTML = '<option value="">Seleccione un aula</option>';
+
+        aulas.forEach((aula) => {
+          const option = document.createElement("option");
+          option.value = aula.id_aula;
+          option.textContent = `Aula ${aula.id_aula} - Grado ${aula.grado} - ${aula.programa}`;
+          selectAula.appendChild(option);
+        });
+      } catch (err) {
+        console.error("Error al cargar aulas:", err);
+        alert("No se pudieron cargar las aulas. Verifique la conexión o el backend.");
+      }
+    }
+
+    // Ejecutar la carga de aulas cuando la página termine de cargar
+    window.addEventListener("DOMContentLoaded", cargarAulas);
+
+    document
+      .getElementById("btnTomarAsistencia")
+      .addEventListener("click", async function () {
+        const idAula = document.getElementById("ID_Aula").value.trim();
+        const idEstudiante = document.getElementById("ID_Estudiante").value.trim();
+        const fecha = document.getElementById("Fecha").value.trim();
+
+        if (!idAula || !idEstudiante || !fecha) {
+          alert("Por favor complete todos los campos.");
+          return;
+        }
+
+        const payload = {
+          id_aula: Number(idAula),
+          id_estudiante: Number(idEstudiante),
+          fecha: fecha, // formato YYYY-MM-DD
+        };
+
+        const resultadoDiv = document.getElementById("resultado");
+        resultadoDiv.innerHTML = "<p>Enviando asistencia...</p>";
+
+        try {
+          const resp = await fetch(`${API_BASE}/api/asistencia-estudiante`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await resp.json();
+
+          if (!resp.ok) {
+            const msg =
+              data.error ||
+              data.mensaje ||
+              "No se pudo registrar la asistencia del estudiante.";
+            alert("Error al registrar asistencia:\n\n" + msg);
+            resultadoDiv.innerHTML = `<p style="color:red;">${msg}</p>`;
+            return;
+          }
+
+          alert(
+            "Asistencia registrada correctamente.\n\n" +
+              "ID Asistencia: " +
+              data.id_asistencia +
+              "\n" +
+              "N° Aula: " +
+              data.id_aula +
+              "\n" +
+              "ID Estudiante: " +
+              data.id_estudiante +
+              "\n" +
+              "Fecha: " +
+              data.fecha
+          );
+
+          resultadoDiv.innerHTML = `
+            <p>Última asistencia registrada:</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID Asistencia</th>
+                  <th>N° Aula</th>
+                  <th>ID Estudiante</th>
+                  <th>Fecha</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>${data.id_asistencia}</td>
+                  <td>${data.id_aula}</td>
+                  <td>${data.id_estudiante}</td>
+                  <td>${data.fecha}</td>
+                </tr>
+              </tbody>
+            </table>
+          `;
+        } catch (err) {
+          console.error(err);
+          alert("Error de conexión con el servidor.");
+          resultadoDiv.innerHTML =
+            '<p style="color:red;">Error de conexión con el servidor.</p>';
+        }
+      });
+  </script>
+</body>
+</html>

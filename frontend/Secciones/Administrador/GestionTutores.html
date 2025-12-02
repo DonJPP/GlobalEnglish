@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gestión de Tutor - Aula</title>
+  <link rel="stylesheet" href="../../Estilos/admin.css" />
+</head>
+<body>
+  <!-- ======== ASIGNAR TUTOR A AULA ======== -->
+  <header>
+    <h3>Asignar Tutor a un Aula</h3>
+  </header>
+
+  <main>
+    <p>
+      <label for="asig_id_aula">N° Aula</label>
+      <input type="number" id="asig_id_aula" />
+
+      <label for="asig_id_tutor">ID Tutor</label>
+      <input type="number" id="asig_id_tutor" />
+
+      <label for="asig_fecha">Fecha Asignación</label>
+      <input type="date" id="asig_fecha" />
+      <!--
+        id_asignacion lo genera la BD (AUTO_INCREMENT),
+        no es necesario pedirlo al usuario
+      -->
+    </p>
+
+    <button id="btnAsignarTutorAula" class="btn">Asignar Tutor al Aula</button>
+  </main>
+
+  <!-- ======== CAMBIO DE TUTOR ======== -->
+  <header>
+    <h3>Cambio de Tutor</h3>
+  </header>
+
+  <main>
+    <p>
+      <label for="cam_id_aula">N° Aula</label>
+      <input type="number" id="cam_id_aula" />
+
+      <label for="cam_id_tutor_v">ID Tutor Actual</label>
+      <input type="number" id="cam_id_tutor_v" />
+
+      <label for="cam_id_tutor_n">ID Tutor Nuevo</label>
+      <input type="number" id="cam_id_tutor_n" />
+
+      <label for="cam_fecha">Fecha del Cambio</label>
+      <input type="date" id="cam_fecha" />
+
+      <label for="cam_nota">Nota (opcional)</label>
+      <input type="text" id="cam_nota" maxlength="100" />
+    </p>
+
+    <button id="btnCambiarTutor" class="btn">Cambiar Tutor</button>
+  </main>
+
+  <script>
+    // Cambia esto si tu backend corre en otro puerto o dominio
+    const API_BASE = "http://localhost:3000";
+
+    // ============ ASIGNACIÓN TUTOR - AULA ============
+    document
+      .getElementById("btnAsignarTutorAula")
+      .addEventListener("click", async function () {
+        const id_aula = document.getElementById("asig_id_aula").value.trim();
+        const id_tutor = document.getElementById("asig_id_tutor").value.trim();
+        const fecha_asig = document.getElementById("asig_fecha").value.trim();
+
+        if (!id_aula || !id_tutor || !fecha_asig) {
+          alert("Por favor complete todos los campos de asignación.");
+          return;
+        }
+
+        const payload = {
+          id_aula: Number(id_aula),
+          id_tutor: Number(id_tutor),
+          fecha_asig: fecha_asig, // formato YYYY-MM-DD
+        };
+
+        try {
+          const resp = await fetch(`${API_BASE}/api/asignaciones`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await resp.json();
+
+          if (!resp.ok) {
+            // El backend manda { error: "mensaje" } en validaciones
+            alert("Error al asignar tutor:\n\n" + (data.error || "Error desconocido"));
+            return;
+          }
+
+          // data debería tener: id_asignacion, id_aula, id_tutor, fecha_asig
+          alert(
+            "Tutor asignado correctamente.\n\n" +
+              "ID Asignación: " +
+              data.id_asignacion +
+              "\n" +
+              "N° Aula: " +
+              data.id_aula +
+              "\n" +
+              "ID Tutor: " +
+              data.id_tutor +
+              "\n" +
+              "Fecha Asignación: " +
+              data.fecha_asig
+          );
+        } catch (err) {
+          console.error(err);
+          alert("Error de conexión con el servidor al asignar tutor.");
+        }
+      });
+
+    // ============ CAMBIO DE TUTOR ============
+    document
+      .getElementById("btnCambiarTutor")
+      .addEventListener("click", async function () {
+        const id_aula = document.getElementById("cam_id_aula").value.trim();
+        const id_tutor_v = document.getElementById("cam_id_tutor_v").value.trim();
+        const id_tutor_n = document.getElementById("cam_id_tutor_n").value.trim();
+        const fecha = document.getElementById("cam_fecha").value.trim();
+        const nota = document.getElementById("cam_nota").value.trim();
+
+        if (!id_aula || !id_tutor_v || !id_tutor_n || !fecha) {
+          alert("Por favor complete todos los campos obligatorios del cambio de tutor.");
+          return;
+        }
+
+        const payload = {
+          id_aula: Number(id_aula),
+          id_tutor_v: Number(id_tutor_v),
+          id_tutor_n: Number(id_tutor_n),
+          fecha: fecha, // YYYY-MM-DD
+          nota: nota || null,
+        };
+
+        try {
+          const resp = await fetch(`${API_BASE}/api/cambios-tutor`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await resp.json();
+
+          if (!resp.ok) {
+            alert("Error al cambiar tutor:\n\n" + (data.error || "Error desconocido"));
+            return;
+          }
+
+          // data: { id_cambio, id_aula, id_tutor_v, id_tutor_n, fecha, nota }
+          alert(
+            "Cambio de tutor registrado correctamente.\n\n" +
+              "ID Cambio: " +
+              data.id_cambio +
+              "\n" +
+              "N° Aula: " +
+              data.id_aula +
+              "\n" +
+              "Tutor Anterior: " +
+              data.id_tutor_v +
+              "\n" +
+              "Tutor Nuevo: " +
+              data.id_tutor_n +
+              "\n" +
+              "Fecha: " +
+              data.fecha +
+              (data.nota ? "\nNota: " + data.nota : "")
+          );
+        } catch (err) {
+          console.error(err);
+          alert("Error de conexión con el servidor al cambiar tutor.");
+        }
+      });
+  </script>
+</body>
+</html>

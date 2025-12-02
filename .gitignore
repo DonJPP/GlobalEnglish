@@ -1,0 +1,11 @@
+# Ignorar TODAS las node_modules del repo
+node_modules/
+**/node_modules/
+
+# Builds
+dist/
+build/
+
+# Entornos
+.env
+.env.local

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Horario del Tutor</title>
+  <link rel="stylesheet" href="../../Estilos/admin.css" />
+  <style>
+    /* Por si quieres algo básico si admin.css no tiene tablas */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    #resultado {
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h3>Horario del Tutor</h3>
+  </header>
+
+  <main>
+    <p>
+      <label for="ID_Tutor">Identificación del Tutor</label>
+      <input type="number" id="ID_Tutor" />
+    </p>
+
+    <button id="btnHorarioTutor" class="btn">Ver Horario del Tutor</button>
+
+    <!-- Aquí se mostrará el resultado -->
+    <div id="resultado"></div>
+  </main>
+
+  <script>
+    // Ajusta el puerto si tu backend usa otro
+    const API_BASE = "http://localhost:3000";
+
+    document
+      .getElementById("btnHorarioTutor")
+      .addEventListener("click", async function () {
+        const idTutorInput = document.getElementById("ID_Tutor");
+        const idTutor = idTutorInput.value.trim();
+
+        if (!idTutor) {
+          alert("Por favor ingrese la identificación del tutor.");
+          return;
+        }
+
+        const resultadoDiv = document.getElementById("resultado");
+        resultadoDiv.innerHTML = "<p>Cargando horario...</p>";
+
+        try {
+          const resp = await fetch(
+            `${API_BASE}/api/reportes/horario-tutor/${encodeURIComponent(
+              idTutor
+            )}`
+          );
+
+          const data = await resp.json();
+
+          if (!resp.ok) {
+            // Ej: 404 sin horario o error de validación
+            resultadoDiv.innerHTML = `<p style="color:red;">${
+              data.error || data.mensaje || "No se pudo obtener el horario."
+            }</p>`;
+            return;
+          }
+
+          if (!Array.isArray(data) || data.length === 0) {
+            resultadoDiv.innerHTML =
+              "<p>Este tutor no tiene aulas u horarios asignados.</p>";
+            return;
+          }
+
+          // Construir tabla HTML
+          let html = "";
+
+          // Encabezado con nombre del tutor
+          const tutorNombreCompleto =
+            data[0].tutor_nombres + " " + data[0].tutor_apellidos;
+          html += `<h4>Horario de: ${tutorNombreCompleto} (ID: ${data[0].id_tutor})</h4>`;
+
+          html += `
+            <table>
+              <thead>
+                <tr>
+                  <th>Aula</th>
+                  <th>Grado</th>
+                  <th>Programa</th>
+                  <th>Institución</th>
+                  <th>Sede</th>
+                  <th>Día</th>
+                  <th>Hora inicio</th>
+                  <th>Hora fin</th>
+                  <th>Min. equivalentes</th>
+                </tr>
+              </thead>
+              <tbody>
+          `;
+
+          data.forEach((fila) => {
+            html += `
+              <tr>
+                <td>${fila.id_aula}</td>
+                <td>${fila.grado}</td>
+                <td>${fila.programa}</td>
+                <td>${fila.institucion}</td>
+                <td>${fila.direccion_completa}</td>
+                <td>${fila.dia_semana}</td>
+                <td>${fila.hora_inicio}</td>
+                <td>${fila.hora_fin}</td>
+                <td>${fila.minutos_equivalentes}</td>
+              </tr>
+            `;
+          });
+
+          html += `
+              </tbody>
+            </table>
+          `;
+
+          resultadoDiv.innerHTML = html;
+        } catch (err) {
+          console.error(err);
+          resultadoDiv.innerHTML =
+            '<p style="color:red;">Error de conexión con el servidor.</p>';
+        }
+      });
+  </script>
+</body>
+</html>

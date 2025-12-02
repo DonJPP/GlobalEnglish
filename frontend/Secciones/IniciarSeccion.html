@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../Estilos/IniciarSeccion.css">
+</head>
+<body>
+    <header><h3>Iniciar Sección</h3></header>
+
+    <main>
+        <p>
+            <label for="rol">Tipo de usuario</label>
+            <select id="rol">
+                <option value="">Seleccione...</option>
+                <option value="Administrador">Administrador</option>
+                <option value="tutor">Tutor</option>
+                <option value="Administrativo">Administrativo</option>
+            </select>
+
+            <br><br>
+
+            <label for="userid">Usuario</label>
+            <input type="text" id="userid">
+
+            <label for="Contra">Contraseña</label>
+            <input type="password" id="Contra">
+        </p>
+
+        <button id="btnIngresar">Ingresar</button>
+    </main>
+
+    <script src="../js/conexion.js"></script>
+    <script>
+        document.getElementById("btnIngresar").addEventListener("click", async function() {
+            const rol = document.getElementById("rol").value.trim();
+            const usuario = document.getElementById("userid").value.trim();
+            const password = document.getElementById("Contra").value.trim();
+
+            if (rol === "" || usuario === "" || password === "") {
+                alert("Por favor complete todos los campos.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ rol, usuario, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Redirect based on role
+                    if (rol === "Administrador") {
+                        window.open("../Secciones/Administrador.html", "_blank");
+                    } else if (rol === "Administrativo") {
+                        window.open("../Secciones/Administrativo.html", "_blank");
+                    } else if (rol === "tutor") {
+                        window.open("../Secciones/Tutor.html", "_blank");
+                    }
+                } else {
+                    alert(data.message || "Error al iniciar sesión");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error de conexión con el servidor");
+            }
+        });
+    </script>
+</body>
+</html>

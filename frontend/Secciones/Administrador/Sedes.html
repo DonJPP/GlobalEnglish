@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Aula</title>
+    <link rel="stylesheet" href="../../Estilos/admin.css">
+</head>
+
+<body>
+
+    <header>
+        <h3>Registro de Sedes</h3>
+    </header>
+
+    <main>
+        <p>
+            <label for="ID_Institucion">ID Institucion</label>
+            <input type="number" id="ID_Institucion">
+
+            <label for="Direccion">Direccion</label>
+            <input type="text" id="Direccion">
+
+            <label for="ID_Sede">ID Sede</label>
+            <input type="text" id="ID_Sede">
+
+            <label for="Sede_Principal">Sede Principal</label>
+            <input type="text" id="Sede_Principal">
+        </p>
+
+        <button id="btnGuardarSede" class="btn">Guardar Sede</button>
+    </main>
+
+
+
+
+
+    <script src="../../js/conexion.js"></script>
+    <script>
+        document.getElementById("btnGuardarSede").addEventListener("click", async function () {
+
+            const id_institucion = document.getElementById("ID_Institucion").value.trim();
+            const direccion_completa = document.getElementById("Direccion").value.trim();
+            const id_sede = document.getElementById("ID_Sede").value.trim();
+            const sede_principal = document.getElementById("Sede_Principal").value.trim();
+
+            if (!id_institucion || !direccion_completa || !id_sede || !sede_principal) {
+                alert("Por favor complete todos los campos.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/sedes`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        id_sede,
+                        id_institucion,
+                        direccion_completa,
+                        sede_principal
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert("Sede Ingresada Correctamente.");
+                    document.getElementById("ID_Institucion").value = "";
+                    document.getElementById("Direccion").value = "";
+                    document.getElementById("ID_Sede").value = "";
+                    document.getElementById("Sede_Principal").value = "";
+                } else {
+                    alert("Error: " + (data.error || data.message || "No se pudo guardar la sede"));
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error de conexión con el servidor");
+            }
+        });
+    </script>
+
+</body>
+
+</html>

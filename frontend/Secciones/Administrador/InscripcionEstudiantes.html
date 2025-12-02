@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Inscripción Estudiante</title>
+    <link rel="stylesheet" href="../../Estilos/admin.css">
+</head>
+
+<body>
+
+    <header>
+        <h3>Inscripción Estudiante</h3>
+    </header>
+
+    <main>
+        <p>
+            <label for="ID_Estudiante">ID Estudiante</label>
+            <input type="number" id="ID_Estudiante">
+
+            <label for="Nombres">Nombres</label>
+            <input type="text" id="Nombres">
+
+            <label for="Apellidos">Apellidos</label>
+            <input type="text" id="Apellidos">
+
+            <label for="N_Aula">N Aula</label>
+            <!-- AHORA ES UN SELECT -->
+            <select id="N_Aula">
+                <option value="">Seleccione un aula (opcional)</option>
+                <!-- Se llenará dinámicamente con las aulas reales -->
+            </select>
+        </p>
+
+        <button id="btnInscribirEstudiante" class="btn">Inscribir Estudiante</button>
+    </main>
+
+    <script src="../../js/conexion.js"></script>
+    <script>
+        // Cargar aulas reales al iniciar la página
+        async function cargarAulas() {
+            const selectAula = document.getElementById("N_Aula");
+
+            try {
+                const response = await fetch(`${API_URL}/aulas`);
+                if (!response.ok) {
+                    throw new Error("No se pudieron obtener las aulas");
+                }
+
+                const aulas = await response.json();
+
+                // Limpiar opciones anteriores y dejar la opción por defecto
+                selectAula.innerHTML = '<option value="">Seleccione un aula (opcional)</option>';
+
+                aulas.forEach((aula) => {
+                    const option = document.createElement("option");
+                    option.value = aula.id_aula;
+
+                    // Texto que verán (puedes ajustar como quieras)
+                    option.textContent = `Aula ${aula.id_aula} - Grado ${aula.grado} - ${aula.programa}`;
+                    selectAula.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error("Error al cargar aulas:", error);
+                alert("No se pudieron cargar las aulas. Verifique la conexión o el backend.");
+            }
+        }
+
+        // Llamar al cargar la página
+        window.addEventListener("DOMContentLoaded", cargarAulas);
+
+        document.getElementById("btnInscribirEstudiante").addEventListener("click", async function () {
+
+            const id_estudiante = document.getElementById("ID_Estudiante").value.trim();
+            const nombres = document.getElementById("Nombres").value.trim();
+            const apellidos = document.getElementById("Apellidos").value.trim();
+            const id_aulaSeleccionada = document.getElementById("N_Aula").value.trim();
+
+            // Aquí hago que id_aula sea OPCIONAL porque tu backend lo permite (puede ser null)
+            if (!id_estudiante || !nombres || !apellidos) {
+                alert("Por favor complete ID, Nombres y Apellidos.");
+                return;
+            }
+
+            // Si no selecciona aula, enviamos null
+            const id_aula = id_aulaSeleccionada === "" ? null : id_aulaSeleccionada;
+
+            try {
+                const response = await fetch(`${API_URL}/estudiantes`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        id_estudiante,
+                        nombres,
+                        apellidos,
+                        id_aula
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert("Estudiante Inscrito Correctamente.");
+
+                    // Limpiar campos
+                    document.getElementById("ID_Estudiante").value = "";
+                    document.getElementById("Nombres").value = "";
+                    document.getElementById("Apellidos").value = "";
+                    document.getElementById("N_Aula").value = "";
+                } else {
+                    alert("Error: " + (data.error || data.message || "No se pudo inscribir al estudiante"));
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error de conexión con el servidor");
+            }
+        });
+    </script>
+
+</body>
+
+</html>
